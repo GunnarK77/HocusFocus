@@ -104,14 +104,24 @@ def run_user_defined_simulation(data):
         if goal_reached:
             break
     
-    # Generate HTML table for results
+     # Generate HTML table for results
     table_html = "<table><tr><th>Day</th><th>Total Time</th><th>Social Media Time</th><th>Read Time</th><th>Day Points</th><th>Total Points</th></tr>"
     for result in all_results:
         table_html += f"<tr><td>{result['Day']}</td><td>{result['Total Time']}</td><td>{result['Social Media Time']}</td><td>{result['Read Time']}</td><td>{result['Day Points']}</td><td>{result['Total Points']}</td></tr>"
     table_html += "</table>"
     
-    # Generate plot
-    plot = plot_results(all_results)
+    # Prepare plot data
+    plot_data = {
+        'Social Media Time': {'x': [], 'y': []},
+        'Reading Time': {'x': [], 'y': []},
+        'Total Points': {'x': [], 'y': []}
+    }
+    for result in all_results:
+        for key in plot_data:
+            plot_data[key]['x'].append(result['Day'])
+        plot_data['Social Media Time']['y'].append(result['Social Media Time'])
+        plot_data['Reading Time']['y'].append(result['Read Time'])
+        plot_data['Total Points']['y'].append(result['Total Points'])
     
-    return table_html, plot
+    return table_html, plot_data
 

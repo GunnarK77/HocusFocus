@@ -92,30 +92,41 @@ def plot_results(all_results):
     plt.close(fig)
     return plot_base64
 
-def run_predefined_simulation(days: int = 14):
-    users = [
-        User("High", 0.005, [0.2, 0.8, 0.1, 0.2]),
-        User("Medium", 0.003, [0.3, 0.6, 0.1, 0.3]),
-        User("Low", 0.002, [0.3, 0.4, 0.1, 0.3])
-    ]
-    
+def run_predefined_simulation(days: int = 7):
+    user_types = ['High', 'Medium', 'Low']
     all_results = []
     
-    for user in users:
+    for user_type in user_types:
+        total_points = 0
         for day in range(1, days + 1):
-            user.simulate_day(day)
+            total_time = random.randint(2, 10)
+            social_media_time = random.randint(0, total_time)
+            read_time = random.randint(0, total_time - social_media_time)
+            day_points = (total_time - social_media_time) + (read_time * 1.5)
+            total_points += day_points
+            
             all_results.append({
-                "User Type": user.type,
-                **user.daily_results[-1]
+                'User Type': user_type,
+                'Day': day,
+                'Total Time': total_time,
+                'Social Media Time': social_media_time,
+                'Read Time': read_time,
+                'Day Points': round(day_points, 2),
+                'Total Points': round(total_points, 2)
             })
     
-    # Generate results table
-    table_html = tabulate(all_results, headers="keys", tablefmt="html")
+    # Prepare plot data
+    plot_data = {
+        'High User': {'x': [], 'y': []},
+        'Medium User': {'x': [], 'y': []},
+        'Low User': {'x': [], 'y': []}
+    }
+    for result in all_results:
+        user_type = f"{result['User Type']} User"
+        plot_data[user_type]['x'].append(result['Day'])
+        plot_data[user_type]['y'].append(result['Total Points'])
     
-    # Generate plot
-    plot_base64 = plot_results(all_results)
-    
-    return table_html, plot_base64
+    return all_results, plot_data
 
 if __name__ == "__main__":
     run_predefined_simulation()
