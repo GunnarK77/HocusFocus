@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Welcome to HocusFocus</h1>
+<p>HocusFocus is an innovative app designed to help you manage your smartphone usage and improve your focus. Our simulations can help you understand your usage patterns and set realistic goals for reducing social media time and increasing productive activities like reading.</p>
+<p>Explore our simulation options:</p>
+<ul>
+    <li><a href="{{ url_for('predefined_sim') }}">Predefined Simulation</a> - See how different user types might benefit from using the app</li>
+    <li><a href="{{ url_for('user_defined_sim') }}">User-Defined Simulation</a> - Input your own usage patterns and goals to see personalized results</li>
+</ul>
+{% endblock %}

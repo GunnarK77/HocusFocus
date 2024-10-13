@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}User-Defined Simulation{% endblock %}
+{% block content %}
+
+<h1>User-Defined Simulation</h1>
+
+<p>Enter your custom parameters to run a personalized simulation.</p>
+
+<form id="simulation-form">
+    <label for="difficulty">Difficulty:</label>
+    <input type="range" id="difficulty" name="difficulty" min="0" max="1" step="1" value="0">
+    <span id="difficulty-label">Easy</span><br>
+
+    <label for="days">Number of days:</label>
+    <input type="number" id="days" name="days" min="1" max="30" value="7"><br>
+
+    <label for="total_time">Total hours per day:</label>
+    <input type="number" id="total_time" name="total_time" min="1" max="24" value="16"><br>
+
+    <h3>Initial hours for activities:</h3>
+    <label for="nothing">Nothing:</label>
+    <input type="number" id="nothing" name="nothing" min="0" max="24" step="0.1" value="3"><br>
+
+    <label for="social_media">Social Media:</label>
+    <input type="number" id="social_media" name="social_media" min="0" max="24" step="0.1" value="6"><br>
+
+    <label for="reading">Reading:</label>
+    <input type="number" id="reading" name="reading" min="0" max="24" step="0.1" value="2"><br>
+
+    <label for="regular">Regular:</label>
+    <input type="number" id="regular" name="regular" min="0" max="24" step="0.1" value="3"><br>
+
+    <label for="motivation">Daily growth rate (0.01 - 0.005):</label>
+    <input type="number" id="motivation" name="motivation" min="0" max="1" step="0.01" value="0.005"><br>
+
+    <label for="goal_social_media">Goal for social media usage (hours):</label>
+    <input type="number" id="goal_social_media" name="goal_social_media" min="0" max="24" step="0.1" value="1"><br>
+
+    <button type="button" id="run-simulation">Run Simulation</button>
+</form>
+
+<div id="results-container" style="display: none;">
+    <h2>Results</h2>
+    <div id="results-table"></div>
+    <h2>Visualization</h2>
+    <img id="results-plot" alt="Simulation Results Plot">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const difficultyInput = document.getElementById('difficulty');
+    const difficultyLabel = document.getElementById('difficulty-label');
+    const runSimulationButton = document.getElementById('run-simulation');
+
+    difficultyInput.addEventListener('input', function() {
+        difficultyLabel.textContent = this.value === "0" ? "Easy" : "Hard";
+    });
+
+    runSimulationButton.addEventListener('click', runSimulation);
+
+    function runSimulation() {
+        const formData = {
+            difficulty: difficultyInput.value === "0" ? "easy" : "hard",
+            days: parseInt(document.getElementById('days').value),
+            total_time: parseInt(document.getElementById('total_time').value),
+            initial_hours: [
+                parseFloat(document.getElementById('nothing').value),
+                parseFloat(document.getElementById('social_media').value),
+                parseFloat(document.getElementById('reading').value),
+                parseFloat(document.getElementById('regular').value)
+            ],
+            motivation: parseFloat(document.getElementById('motivation').value),
+            goal_social_media: parseFloat(document.getElementById('goal_social_media').value)
+        };
+
+        fetch('/run_user_defined_sim', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('results-table').innerHTML = data.results;
+            document.getElementById('results-plot').src = 'data:image/png;base64,' + data.plot;
+            document.getElementById('results-container').style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+});
+</script>
+
+{% endblock %}

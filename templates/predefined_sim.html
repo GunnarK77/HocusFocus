@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Predefined Simulation{% endblock %}
+{% block content %}
+
+<h1>Predefined Simulation</h1>
+
+<p>This simulation shows how different user types (High, Medium, and Low usage) might benefit from using HocusFocus over a 7-day period.</p>
+
+<button id="run-simulation">Run Simulation</button>
+
+<div id="results-container" style="display: none;">
+    <h2>Results</h2>
+    <div id="results-table"></div>
+    <h2>Visualization</h2>
+    <img id="results-plot" alt="Simulation Results Plot" style="max-width: 100%;">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const runSimulationButton = document.getElementById('run-simulation');
+    runSimulationButton.addEventListener('click', runSimulation);
+
+    function runSimulation() {
+        fetch('/run_predefined_sim', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('results-table').innerHTML = data.results;
+            document.getElementById('results-plot').src = 'data:image/png;base64,' + data.plot;
+            document.getElementById('results-container').style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+});
+</script>
+
+{% endblock %}
